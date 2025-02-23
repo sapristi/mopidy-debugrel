@@ -4,7 +4,11 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sapristi/mopidy-debugrel/ci.yml?link=https://github.com/sapristi/mopidy-debugrel/actions/workflows/ci.yml)
 ![Codecov](https://img.shields.io/codecov/c/gh/sapristi/mopidy-debugrel?link=https://codecov.io/gh/sapristi/mopidy-debugrel)
 
-Mopidy extension that provides a debugging Read-Eval loop over http
+Mopidy extension that provides a Read-Eval loop over http, for debugging purpose. 
+
+**Warning**: enabling this extension leaves your server vulnerable, make sure mopidy is not exposed to the web when enabling it, and disable it when you are done.
+
+TODO: add a `enable_until` configuration, to ensure 
 
 
 ## Installation
@@ -20,14 +24,88 @@ See https://mopidy.com/ext/debugrel/ for alternative installation methods.
 
 ## Configuration
 
-Before starting Mopidy, you must add configuration for
-mopidy-debugrel to your Mopidy configuration file:
+This extension is disabled by default. To enable it, add the following to your mopidy configuration file:
 
 ```ini
 [debugrel]
-# TODO: Add example of extension config
+enabled = true
 ```
 
+## Usage
+
+### Overview
+
+This extension exposes a single API endpoint, that will execute the python code that you pass in your request. For example:
+
+```python
+import requests
+
+MOPIDY_HOST = "localhost"
+MOPIDY_PORT = "6680"
+
+code = """
+logger.info("hello")
+"""
+
+requests.post(f"http://{MOPIDY_HOST}:{MOPIDY_PORT}/debugrel/debug", json={"source": code})
+```
+
+Running this trigger the execution of `code` in mopidy, resulting in the following logs:
+```
+mopidy[1771]: INFO     2025-02-23 14:39:29,689 [1771:HttpServer] mopidy_debugrel
+mopidy[1771]:   hello
+```
+
+In the context of execution, you can access mopidy config with `self.config`, and mopidy core with `self.core`
+
+### Examples
+
+Some examples of code that you can use.
+
+1. Access the backends
+
+  ```python
+  code = """
+  logger.info(self.core.backends.get())
+  """
+
+  requests.post(f"http://{MOPIDY_HOST}:{MOPIDY_PORT}/debugrel/debug", json={"source": code})
+  ```
+
+  Logs:
+  ```
+  mopidy[1771]: INFO     2025-02-23 14:55:59,966 [1771:HttpServer] mopidy_debugrel
+  mopidy[1771]:   [<ActorProxy for FileBackend (urn:uuid:55234968-8840-4618-8bdb-f990c084fcac), attr_path=()>, <ActorProxy for M3UBackend (urn:uuid:eb60e9fe-5db9-4d8f-8444-d586aaae8573), attr_path=()>, <ActorProxy for StreamBackend (urn:uuid:1050cc10-6178-4820-aaf8-d4ab14cec939), attr_path=()>, <ActorProxy for BookmarksBackend (urn:uuid:ade7e4bd-2130-421e-9c98-aadeeaa77863), attr_path=()>, <ActorProxy for TidalBackend (urn:uuid:6cbdb63d-b5a5-4bc5-8ceb-7511457ac98a), attr_path=()>]
+  ```
+
+
+2. Instantiate a tidal backend
+
+ ```python
+  code = """
+  from mopidy_tidal.backend import TidalBackend
+  backend = TidalBackend(self.config, None)
+  logger.info(backend)
+  """
+
+  requests.post("http://gidouille.local:6680/debugrel/debug", json={"source": code})  ```
+  ```
+
+  Logs:
+  ```
+  mopidy[1771]: INFO     2025-02-23 14:54:53,030 [1771:HttpServer] mopidy_debugrel
+  mopidy[1771]:   TidalBackend (urn:uuid:b496ce6c-d856-4e37-939f-f311d067892d)
+  ```
+
+3. Print config entries:
+ ```python
+  code = """
+  for key, value in self.config.items():
+      logger.info(f"{key}: {value}")
+  """
+
+  requests.post("http://gidouille.local:6680/debugrel/debug", json={"source": code})  ```
+  ```
 
 ## Project resources
 
@@ -51,39 +129,6 @@ Enter the directory, and install dependencies using [uv](https://docs.astral.sh/
 ```sh
 cd mopidy-debugrel/
 uv sync
-```
-
-### Running tests
-
-To run all tests and linters in isolated environments, use
-[tox](https://tox.wiki/):
-
-```sh
-tox
-```
-
-To only run tests, use [pytest](https://pytest.org/):
-
-```sh
-pytest
-```
-
-To format the code, use [ruff](https://docs.astral.sh/ruff/):
-
-```sh
-ruff format .
-```
-
-To check for lints with ruff, run:
-
-```sh
-ruff check .
-```
-
-To check for type errors, use [pyright](https://microsoft.github.io/pyright/):
-
-```sh
-pyright .
 ```
 
 ### Setup before first release
