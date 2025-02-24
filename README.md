@@ -1,8 +1,6 @@
 # mopidy-debugrel
 
 ![PyPI - Version](https://img.shields.io/pypi/v/mopidy-debugrel?link=https://pypi.org/p/mopidy-debugrel)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sapristi/mopidy-debugrel/ci.yml?link=https://github.com/sapristi/mopidy-debugrel/actions/workflows/ci.yml)
-![Codecov](https://img.shields.io/codecov/c/gh/sapristi/mopidy-debugrel?link=https://codecov.io/gh/sapristi/mopidy-debugrel)
 
 Mopidy extension that provides a Read-Eval loop over http, for debugging purpose.
 
