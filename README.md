@@ -4,11 +4,9 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/sapristi/mopidy-debugrel/ci.yml?link=https://github.com/sapristi/mopidy-debugrel/actions/workflows/ci.yml)
 ![Codecov](https://img.shields.io/codecov/c/gh/sapristi/mopidy-debugrel?link=https://codecov.io/gh/sapristi/mopidy-debugrel)
 
-Mopidy extension that provides a Read-Eval loop over http, for debugging purpose. 
+Mopidy extension that provides a Read-Eval loop over http, for debugging purpose.
 
 **Warning**: enabling this extension leaves your server vulnerable, make sure mopidy is not exposed to the web when enabling it, and disable it when you are done.
-
-TODO: add a `enable_until` configuration, to ensure 
 
 
 ## Installation
@@ -29,6 +27,8 @@ This extension is disabled by default. To enable it, add the following to your m
 ```ini
 [debugrel]
 enabled = true
+# Adapt enabled_until to your needs
+enabled_until = 2025-05-01
 ```
 
 ## Usage
@@ -130,23 +130,6 @@ Enter the directory, and install dependencies using [uv](https://docs.astral.sh/
 cd mopidy-debugrel/
 uv sync
 ```
-
-### Setup before first release
-
-Before the first release, you must [enable trusted publishing on
-PyPI](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)
-so that the `release.yml` GitHub Action can create the PyPI project and publish
-releases to PyPI.
-
-When following the instructions linked above, use the following values in the
-form at PyPI:
-
-- Publisher: GitHub
-- PyPI project name: `mopidy-debugrel`
-- Owner: `sapristi`
-- Repository name: `mopidy-debugrel`
-- Workflow name: `release.yml`
-- Environment name: `pypi` (must match environment name in `release.yml`)
 
 ### Making a release
 
