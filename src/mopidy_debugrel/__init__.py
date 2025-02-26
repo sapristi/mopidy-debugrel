@@ -30,7 +30,6 @@ class DebugRequestHandler(tornado.web.RequestHandler):
 
 def api_factory(config, core):
 
-    logger.info("HELLOOOOOOOOOOo")
     enabled_until_str = config["debugrel"]["enabled_until"]
     try:
         enabled_until = date.fromisoformat(enabled_until_str)
